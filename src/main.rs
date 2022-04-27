@@ -2,6 +2,7 @@ mod filter;
 use filter::BloomFilter;
 use openssl::hash::MessageDigest;
 use std::error::Error;
+use std::rc::Rc;
 use std::{fs, io::BufRead};
 fn main() -> Result<(), Box<dyn Error>> {
     let mut args = std::env::args().skip(1);
@@ -13,22 +14,22 @@ fn main() -> Result<(), Box<dyn Error>> {
     let buf_reader = std::io::BufReader::new(&file);
     let checker_buf_reader = std::io::BufReader::new(&other_file);
     let mut bloom_filter1 = BloomFilter::new(
-        vec![
+        Rc::new(vec![
             MessageDigest::shake_256(),
             MessageDigest::sha512(),
             MessageDigest::sha1(),
-        ],
+        ]),
         (*&file.metadata()?.len().to_owned()) as usize,
     );
 
     let mut bloom_filter2 = BloomFilter::new(
-        vec![
+        Rc::new(vec![
             MessageDigest::sha3_256(),
             MessageDigest::shake_256(),
             MessageDigest::sha512(),
             MessageDigest::sha1(),
             MessageDigest::sha384(),
-        ],
+        ]),
         (*&file.metadata()?.len().to_owned()) as usize,
     );
 

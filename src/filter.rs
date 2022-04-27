@@ -1,19 +1,18 @@
 use bitvec::prelude::*;
-use hex::{self, ToHex};
+use hex::{self};
 use openssl::hash::{self, MessageDigest};
-use std::{error::Error, io::Read};
+use std::{error::Error, rc::Rc};
 
 pub struct BloomFilter {
     pub bit_vector: BitVec,
-    digest_list: Vec<MessageDigest>,
+    digest_list: Rc<Vec<MessageDigest>>,
     size: usize,
 }
 
 impl BloomFilter {
-    pub fn new(digest_list: Vec<MessageDigest>, size: usize) -> BloomFilter {
+    pub fn new(digest_list: Rc<Vec<MessageDigest>>, size: usize) -> BloomFilter {
         let mut bit_vector = BitVec::<usize, LocalBits>::with_capacity(size);
         bit_vector.resize(size, false);
-        // dbg!(&bit_vector);
         BloomFilter {
             size,
             bit_vector,
@@ -64,7 +63,7 @@ impl BloomFilter {
 
     fn hash_index(&self, item: &str) -> Result<Vec<usize>, Box<dyn Error>> {
         let mut final_indices = Vec::new();
-        for cur_hash in &self.digest_list {
+        for cur_hash in self.digest_list.iter() {
             let mut hasher = hash::Hasher::new(*cur_hash)?;
             hasher.update(item.as_bytes())?;
             let hash_value = hasher.finish()?;
