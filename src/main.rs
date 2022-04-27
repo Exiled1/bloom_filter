@@ -2,8 +2,6 @@ mod filter;
 use filter::BloomFilter;
 use openssl::hash::MessageDigest;
 use std::error::Error;
-use std::rc::Rc;
-use std::sync::Arc;
 use std::{fs, io::BufRead};
 fn main() -> Result<(), Box<dyn Error>> {
     let mut args = std::env::args().skip(1);
