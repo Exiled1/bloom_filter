@@ -7,7 +7,7 @@ edition = "2021"
 
 [profile.release]
 # opt-level = 3
-overflow-checks = false
+# overflow-checks = false
 # lto = true
 
 
